@@ -1,5 +1,3 @@
-![Harel Insurance Automation](https://github.com/Ben-Baum/Harel-home-test/actions/workflows/test.yml/badge.svg)
-
 Harel Travel Insurance - Automation Project
 
 OVERVIEW
