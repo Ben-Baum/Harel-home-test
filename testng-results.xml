@@ -2,20 +2,20 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-01-31T12:35:19 UTC" name="Surefire suite" finished-at="2026-01-31T12:35:58 UTC" duration-ms="39091">
+  <suite started-at="2026-01-31T12:35:59 UTC" name="Surefire suite" finished-at="2026-01-31T12:36:44 UTC" duration-ms="45594">
     <groups>
     </groups>
-    <test started-at="2026-01-31T12:35:19 UTC" name="Surefire test" finished-at="2026-01-31T12:35:58 UTC" duration-ms="39091">
+    <test started-at="2026-01-31T12:35:59 UTC" name="Surefire test" finished-at="2026-01-31T12:36:44 UTC" duration-ms="45594">
       <class name="com.harel.tests.TravelInsuranceTest">
-        <test-method is-config="true" signature="setUp()[pri:0, instance:com.harel.tests.TravelInsuranceTest@671a5887]" started-at="2026-01-31T12:35:19 UTC" name="setUp" finished-at="2026-01-31T12:35:23 UTC" duration-ms="3408" status="PASS">
+        <test-method is-config="true" signature="setUp()[pri:0, instance:com.harel.tests.TravelInsuranceTest@671a5887]" started-at="2026-01-31T12:35:59 UTC" name="setUp" finished-at="2026-01-31T12:36:08 UTC" duration-ms="9432" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setUp -->
-        <test-method signature="testTravelInsuranceFlow()[pri:0, instance:com.harel.tests.TravelInsuranceTest@671a5887]" started-at="2026-01-31T12:35:23 UTC" name="testTravelInsuranceFlow" finished-at="2026-01-31T12:35:53 UTC" duration-ms="30541" status="PASS">
+        <test-method signature="testTravelInsuranceFlow()[pri:0, instance:com.harel.tests.TravelInsuranceTest@671a5887]" started-at="2026-01-31T12:36:08 UTC" name="testTravelInsuranceFlow" finished-at="2026-01-31T12:36:39 UTC" duration-ms="31025" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- testTravelInsuranceFlow -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.harel.tests.TravelInsuranceTest@671a5887]" started-at="2026-01-31T12:35:53 UTC" name="tearDown" finished-at="2026-01-31T12:35:58 UTC" duration-ms="5091" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.harel.tests.TravelInsuranceTest@671a5887]" started-at="2026-01-31T12:36:39 UTC" name="tearDown" finished-at="2026-01-31T12:36:44 UTC" duration-ms="5092" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
