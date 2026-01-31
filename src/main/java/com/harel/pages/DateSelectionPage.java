@@ -6,6 +6,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.*;
+import io.qameta.allure.Step;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,28 +26,6 @@ public class DateSelectionPage extends BasePage {
 
     public DateSelectionPage(WebDriver driver) {
         super(driver);
-    }
-
-    /**
-     * Selects the departure and return dates.
-     * 
-     * @param departureDate Start date of insurance
-     * @param returnDate    End date of insurance
-     * @return this page for chaining
-     */
-    public DateSelectionPage selectDates(LocalDate departureDate, LocalDate returnDate) {
-        click(startDateInput); // Open picker
-        selectDate(departureDate);
-
-        try {
-            Thread.sleep(2000); // Wait for potential animations
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        click(endDateInput); // Open picker for return date
-        selectDate(returnDate);
-        return this;
     }
 
     private void selectDate(LocalDate date) {
@@ -111,12 +91,33 @@ public class DateSelectionPage extends BasePage {
         throw new RuntimeException("Failed to find and select date: " + dateTitle);
     }
 
-    public String getTotalDays() {
-        return readText(totalDaysText);
+    @Step("Select travel dates: {departureDate} to {returnDate}")
+    public void selectDates(LocalDate departureDate, LocalDate returnDate) {
+        click(startDateInput); // Open picker
+        selectDate(departureDate);
+
+        try {
+            Thread.sleep(2000); // Wait for potential animations
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        click(endDateInput); // Open picker for return date
+        selectDate(returnDate);
     }
 
+    @Step("Get 'Total Days' text from UI")
+    public String getTotalDays() {
+        try {
+            return driver.findElement(totalDaysText).getText();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    @Step("Proceed to passenger details")
     public PassengerDetailsPage clickNext() {
-        click(nextBtn);
+        driver.findElement(nextBtn).click();
         return new PassengerDetailsPage(driver);
     }
 }

@@ -9,6 +9,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import io.qameta.allure.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -37,7 +38,12 @@ public class TravelInsuranceTest {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 
-    @Test
+    @Test(description = "Automated flow for purchasing travel insurance")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("End-to-end test for Harel Travel Insurance: From home page to passenger details with 30-day date calculation")
+    @Epic("Insurance Purchase")
+    @Feature("Travel Insurance")
+    @Story("First time purchase flow")
     public void testTravelInsuranceFlow() throws InterruptedException {
         // 1. Initialize Page Objects
         homePage = new HomePage(driver);
