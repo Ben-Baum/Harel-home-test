@@ -11,8 +11,12 @@ public class ContinentSelectionPage extends BasePage {
         super(driver);
     }
 
-    public ContinentSelectionPage selectEurope() {
-        click(europeRadio);
+    public ContinentSelectionPage selectContinent(String continentName) {
+        if (continentName.equals("אירופה")) {
+            click(europeRadio);
+        } else {
+            throw new IllegalArgumentException("Continent not supported yet: " + continentName);
+        }
         return this;
     }
 

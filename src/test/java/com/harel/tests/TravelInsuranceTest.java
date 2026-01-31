@@ -1,9 +1,6 @@
 package com.harel.tests;
 
-import com.harel.pages.ContinentSelectionPage;
-import com.harel.pages.DateSelectionPage;
-import com.harel.pages.HomePage;
-import com.harel.pages.PassengerDetailsPage;
+import com.harel.pages.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -13,9 +10,13 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.time.Duration;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
+/**
+ * Test class for Harel Travel Insurance purchase flow.
+ * Verifies end-to-end scenario from homepage to passenger details.
+ */
 public class TravelInsuranceTest {
     private WebDriver driver;
     private HomePage homePage;
@@ -24,48 +25,61 @@ public class TravelInsuranceTest {
     public void setUp() {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
-        // options.addArguments("--headless"); // Run in headless mode if needed
+        options.addArguments("--start-maximized");
+        options.addArguments("--disable-notifications");
         driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
-        driver.get("https://digital.harel-group.co.il/travel-policy");
-        homePage = new HomePage(driver);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 
     @Test
-    public void testTravelInsuranceFlow() {
-        // 2. Click purchase for the first time
-        ContinentSelectionPage continentPage = homePage.clickPurchaseFirstTime();
+    public void testTravelInsuranceFlow() throws InterruptedException {
+        // 1. Initialize Page Objects
+        homePage = new HomePage(driver);
 
-        // 3. Select continent (Europe)
-        continentPage.selectEurope();
+        // 2. Navigate and start process
+        homePage.navigateTo("https://digital.harel-group.co.il/travel-policy/");
+        ContinentSelectionPage continentPage = homePage.clickPurchaseForFirstTime();
 
-        // 4. Click Next
+        // 3. Select Europe
+        continentPage.selectContinent("אירופה");
         DateSelectionPage datePage = continentPage.clickNext();
 
-        // 5. Select dates: 7 days from now, and 30 days from departure
-        LocalDate today = LocalDate.now();
-        LocalDate departureDate = today.plusDays(7);
-        LocalDate returnDate = departureDate.plusDays(30);
+        // 4. Calculate Dates
+        // Departure: 7 days from today
+        LocalDate departureDate = LocalDate.now().plusDays(7);
+        // Return: 30 days inclusive (Departure + 29 days)
+        LocalDate returnDate = departureDate.plusDays(29);
 
+        // 5. Select Dates
         datePage.selectDates(departureDate, returnDate);
 
-        // 6. Verify total days
-        long expectedDays = ChronoUnit.DAYS.between(departureDate, returnDate) + 1;
+        // 6. Verify Total Days (Should be exactly 30)
         String totalDaysText = datePage.getTotalDays();
-        System.out.println("Total days displayed: " + totalDaysText);
-        Assert.assertTrue(totalDaysText.contains(String.valueOf(expectedDays)),
-                "Expected total days: " + expectedDays + " but got: " + totalDaysText);
+        Assert.assertNotNull(totalDaysText, "Total days verification failed!");
+        Assert.assertTrue(totalDaysText.contains("30"),
+                "Expected total days to be 30, but got: " + totalDaysText);
 
-        // 7. Click Next to passenger details
-        PassengerDetailsPage detailsPage = datePage.clickNext();
+        // 7. Proceed to Passenger Details
+        if (driver != null) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            PassengerDetailsPage passengerPage = datePage.clickNext();
+            Assert.assertTrue(passengerPage.isPageOpened(), "Passenger Details page did not load!");
 
-        // 8. Verify passenger details page opened
-        Assert.assertTrue(detailsPage.isPageOpened(), "Passenger details page should be opened");
+        }
     }
 
     @AfterMethod
     public void tearDown() {
         if (driver != null) {
+            try {
+                Thread.sleep(5000); // Wait 5 seconds before closing
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             driver.quit();
         }
     }

@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class PassengerDetailsPage extends BasePage {
-    private By pageIndicator = By.xpath("//div[contains(text(), 'פרטי הנוסע הראשון')]");
+    private By pageIndicator = By.xpath("//*[contains(., 'נשמח להכיר את הנוסעים')]");
 
     public PassengerDetailsPage(WebDriver driver) {
         super(driver);

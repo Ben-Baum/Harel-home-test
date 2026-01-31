@@ -10,7 +10,11 @@ public class HomePage extends BasePage {
         super(driver);
     }
 
-    public ContinentSelectionPage clickPurchaseFirstTime() {
+    public void navigateTo(String url) {
+        driver.get(url);
+    }
+
+    public ContinentSelectionPage clickPurchaseForFirstTime() {
         click(purchaseFirstTimeBtn);
         return new ContinentSelectionPage(driver);
     }

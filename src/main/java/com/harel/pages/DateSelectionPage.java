@@ -1,82 +1,114 @@
 package com.harel.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
+/**
+ * Page object for the Date Selection step in the wizard.
+ * Handles date picking logic including month navigation.
+ */
 public class DateSelectionPage extends BasePage {
-    private By totalDaysText = By.xpath("//div[contains(text(), 'סה\"כ')]");
+    private By totalDaysText = By.xpath("//div[contains(., 'סה\"כ')]");
     private By nextBtn = By.xpath("//span[text()='הלאה לפרטי הנוסעים']/parent::button");
     private By nextMonthBtn = By.cssSelector("button[aria-label='לעבור לחודש הבא']");
+    private By startDateInput = By.id("travel_start_date");
+    private By endDateInput = By.id("travel_end_date");
 
     public DateSelectionPage(WebDriver driver) {
         super(driver);
     }
 
+    /**
+     * Selects the departure and return dates.
+     * 
+     * @param departureDate Start date of insurance
+     * @param returnDate    End date of insurance
+     * @return this page for chaining
+     */
     public DateSelectionPage selectDates(LocalDate departureDate, LocalDate returnDate) {
+        click(startDateInput); // Open picker
         selectDate(departureDate);
+
+        try {
+            Thread.sleep(2000); // Wait for potential animations
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        click(endDateInput); // Open picker for return date
         selectDate(returnDate);
         return this;
     }
 
     private void selectDate(LocalDate date) {
         String dateTitle = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        By dateLocator = By.xpath("//button[starts-with(@title, '" + dateTitle + "')]");
+        By dateLocator = By.xpath("//button[contains(@title, '" + dateTitle + "')]");
 
-        System.out.println("Attempting to select date: " + dateTitle);
+        // Wait for calendar to be fully visible and stable
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-        int maxMonthClicks = 12;
-        while (maxMonthClicks > 0) {
-            try {
-                // Wait for any animations to finish
-                Thread.sleep(800);
+        // Try up to 12 months ahead
+        for (int i = 0; i < 12; i++) {
+            List<WebElement> buttons = driver.findElements(dateLocator);
 
-                WebElement dateElement = findVisibleElement(dateLocator);
-                if (dateElement != null) {
-                    System.out.println("Date " + dateTitle + " found. Clicking...");
+            for (WebElement btn : buttons) {
+                if (btn.isDisplayed()) {
+                    ((JavascriptExecutor) driver)
+                            .executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", btn);
+
                     try {
-                        dateElement.click();
+                        new WebDriverWait(driver, Duration.ofSeconds(2))
+                                .until(ExpectedConditions.elementToBeClickable(btn));
+                        btn.click();
+                        return;
                     } catch (Exception e) {
-                        System.out.println("Regular click failed, trying JS click...");
-                        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();",
-                                dateElement);
+                        // Fallback to JS click if standard click is intercepted
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+                        return;
                     }
-                    Thread.sleep(500);
-                    return;
                 }
-            } catch (Exception e) {
-                System.out.println("Error during date selection: " + e.getMessage());
             }
 
-            // If date not found, click next month
+            // Navigate to next month if date not found
             try {
-                System.out.println("Date not found in visible months, clicking next month...");
-                WebElement nextMonth = waitForElementToBeClickable(nextMonthBtn);
+                WebElement nextHeader = driver.findElement(nextMonthBtn);
+                // Use JS Scroll & Click directly to bypass rigid clickability checks
+                ((JavascriptExecutor) driver).executeScript(
+                        "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", nextHeader);
+
                 try {
-                    nextMonth.click();
-                } catch (Exception e) {
-                    ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", nextMonth);
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", nextHeader);
+
+                try {
+                    Thread.sleep(1500); // Wait for transition
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
             } catch (Exception e) {
-                System.out.println("Next month button not clickable/found.");
-                // If we can't click next month, check one last time if the date appeared
-                if (findVisibleElement(dateLocator) == null)
+                // If next button fails and we haven't found the date, verify and break
+                if (driver.findElements(dateLocator).isEmpty()) {
                     break;
+                }
             }
-            maxMonthClicks--;
         }
-
-        throw new RuntimeException("Failed to select date: " + dateTitle);
-    }
-
-    private WebElement findVisibleElement(By locator) {
-        for (WebElement element : driver.findElements(locator)) {
-            if (element.isDisplayed())
-                return element;
-        }
-        return null;
+        throw new RuntimeException("Failed to find and select date: " + dateTitle);
     }
 
     public String getTotalDays() {
