@@ -28,6 +28,24 @@ jobs:
     - name: Run Tests (Headless)
       run: mvn test -Dselenium.headless=true
 
+    - name: Get Allure history
+      uses: actions/checkout@v3
+      if: always()
+      continue-on-error: true
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Generate Allure Report
+      uses: simple-elf/allure-report-action@master
+      if: always()
+      id: allure-report
+      with:
+        allure_results: target/allure-results
+        gh_pages: gh-pages
+        allure_report: allure-report
+        allure_history: allure-history
+
     - name: Setup Pages
       if: always()
       uses: actions/configure-pages@v3
@@ -36,7 +54,7 @@ jobs:
       if: always()
       uses: actions/upload-pages-artifact@v2
       with:
-        path: target/surefire-reports
+        path: allure-report
 
     - name: Deploy to GitHub Pages
       if: always()
