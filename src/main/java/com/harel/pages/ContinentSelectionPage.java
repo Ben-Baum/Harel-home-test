@@ -6,8 +6,7 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.WebElement;
 
 public class ContinentSelectionPage extends BasePage {
-    private By europeRadio = By.id("destination-3");
-    private By nextBtn = By.xpath("//span[text()='הלאה לבחירת תאריכי הנסיעה']/parent::button");
+    private By nextBtn = By.id("next-btn");
 
     public ContinentSelectionPage(WebDriver driver) {
         super(driver);
