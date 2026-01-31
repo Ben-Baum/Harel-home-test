@@ -1,0 +1,42 @@
+name: Harel Insurance Automation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Run Tests (Headless)
+      # We add -Dheadless=true to our code/properties or reliable setup
+      # But since our code currently doesn't have a "headless switch" logic explicitly handled 
+      # beyond what ChromeOptions usually do (we might need to ensure headless is passed).
+      # Actually, let's keep it simple. Standard Chrome on Linux CI usually needs headless.
+      # We will pass a system property and update the test to respect it, or just rely on the fact 
+      # that we are running in a container.
+      # For now, let's just run 'mvn test' and rely on the fact that we might need to update the code 
+      # to support headless if it fails, OR we update the code now to support it.
+      # Let's update code to read a system property.
+      run: mvn test -Dselenium.headless=true
+
+    - name: Publish Test Report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-reports
+        path: target/surefire-reports

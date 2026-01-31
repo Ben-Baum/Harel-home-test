@@ -27,6 +27,12 @@ public class TravelInsuranceTest {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized");
         options.addArguments("--disable-notifications");
+
+        // Support for Cloud execution (GitHub Actions)
+        if (Boolean.getBoolean("selenium.headless")) {
+            options.addArguments("--headless=new");
+        }
+
         driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
