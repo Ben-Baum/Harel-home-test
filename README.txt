@@ -29,5 +29,8 @@ HOW TO RUN
 Locally:
 Run `mvn clean test` from the root directory.
 
-Cloud (GitHub Actions):
-Upon pushing to GitHub, the test runs automatically. Results and reports are available under the "Actions" tab in your repository.
+Cloud (GitHub Actions & Live Report):
+Upon pushing to GitHub, the test runs automatically. 
+🚀 View the latest Live Test Report here: https://Ben-Baum.github.io/Harel-home-test/index.html
+(Note: The link will work after the first successful Cloud run).
+

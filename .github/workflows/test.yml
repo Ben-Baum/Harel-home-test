@@ -2,10 +2,13 @@ name: Harel Insurance Automation
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   test:
@@ -23,20 +26,17 @@ jobs:
         cache: maven
 
     - name: Run Tests (Headless)
-      # We add -Dheadless=true to our code/properties or reliable setup
-      # But since our code currently doesn't have a "headless switch" logic explicitly handled 
-      # beyond what ChromeOptions usually do (we might need to ensure headless is passed).
-      # Actually, let's keep it simple. Standard Chrome on Linux CI usually needs headless.
-      # We will pass a system property and update the test to respect it, or just rely on the fact 
-      # that we are running in a container.
-      # For now, let's just run 'mvn test' and rely on the fact that we might need to update the code 
-      # to support headless if it fails, OR we update the code now to support it.
-      # Let's update code to read a system property.
       run: mvn test -Dselenium.headless=true
 
-    - name: Publish Test Report
+    - name: Prepare Report for Deployment
       if: always()
-      uses: actions/upload-artifact@v3
+      run: |
+        mkdir -p public
+        cp -r target/surefire-reports/* public/
+
+    - name: Deploy to GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        name: test-reports
-        path: target/surefire-reports
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
