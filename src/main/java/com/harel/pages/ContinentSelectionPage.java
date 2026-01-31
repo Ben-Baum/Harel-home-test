@@ -6,16 +6,22 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.WebElement;
 
 public class ContinentSelectionPage extends BasePage {
-    private By nextBtn = By.id("next-btn");
+    private By europeRadio = By.xpath("//div[contains(text(), 'אירופה')]");
+    private By nextBtn = By.xpath("//span[contains(text(), 'הלאה לבחירת תאריכי הנסיעה')]/parent::button");
 
     public ContinentSelectionPage(WebDriver driver) {
         super(driver);
     }
 
     @Step("Select continent: {continentName}")
-    public void selectContinent(String continentName) {
-        WebElement continent = driver.findElement(By.xpath("//div[contains(text(), '" + continentName + "')]"));
-        continent.click();
+    public ContinentSelectionPage selectContinent(String continentName) {
+        if (continentName.equals("אירופה")) {
+            click(europeRadio);
+        } else {
+            WebElement continent = driver.findElement(By.xpath("//div[contains(text(), '" + continentName + "')]"));
+            continent.click();
+        }
+        return this;
     }
 
     @Step("Proceed to date selection")
