@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -28,15 +28,17 @@ jobs:
     - name: Run Tests (Headless)
       run: mvn test -Dselenium.headless=true
 
-    - name: Prepare Report for Deployment
+    - name: Setup Pages
       if: always()
-      run: |
-        mkdir -p public
-        cp -r target/surefire-reports/* public/
+      uses: actions/configure-pages@v3
+
+    - name: Upload Report
+      if: always()
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: target/surefire-reports
 
     - name: Deploy to GitHub Pages
       if: always()
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
+      id: deployment
+      uses: actions/deploy-pages@v2
