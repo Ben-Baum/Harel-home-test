@@ -117,7 +117,7 @@ public class DateSelectionPage extends BasePage {
 
     @Step("Proceed to passenger details")
     public PassengerDetailsPage clickNext() {
-        driver.findElement(nextBtn).click();
+        click(nextBtn);
         return new PassengerDetailsPage(driver);
     }
 }

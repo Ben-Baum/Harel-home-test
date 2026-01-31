@@ -7,7 +7,7 @@ import org.openqa.selenium.WebElement;
 
 public class ContinentSelectionPage extends BasePage {
     private By europeRadio = By.xpath("//div[contains(text(), 'אירופה')]");
-    private By nextBtn = By.xpath("//span[contains(text(), 'הלאה לבחירת תאריכי הנסיעה')]/parent::button");
+    private By nextBtn = By.xpath("//button[.//span[contains(text(), 'הלאה')]]");
 
     public ContinentSelectionPage(WebDriver driver) {
         super(driver);
@@ -26,6 +26,7 @@ public class ContinentSelectionPage extends BasePage {
 
     @Step("Proceed to date selection")
     public DateSelectionPage clickNext() {
+        waitForElementToBeClickable(nextBtn);
         click(nextBtn);
         return new DateSelectionPage(driver);
     }
